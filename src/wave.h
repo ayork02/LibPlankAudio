@@ -11,11 +11,12 @@ public:
 	void printDuration();
 	void play(unsigned short pos = 0);
 	void stop();
+	void pause();
 	double getTime();
 private:
 	const char* filepath;
-	short* data;
+	float* data;
 	boost::thread thread;
 
-	void playPCM16(unsigned short pos);	
+	void playPCM(unsigned short pos);
 };

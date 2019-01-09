@@ -22,13 +22,17 @@ protected:
 	PaError paError;
 	SNDFILE *sndFile;
 	SF_INFO sfInfo;
+	PaStream *stream;
 	double currentTime;
+	PaSampleFormat paFormat;
+	bool paused = false;
 
 	Audio(const char* file); // opens audio device
 	~Audio();
 	virtual void play(unsigned short pos = 0);
 	virtual void printSpecs();
 	virtual void stop();
+	virtual void pause();
 public:
 	void printDuration();
 	double getTime();

@@ -21,7 +21,8 @@ Audio::Audio(const char* file)
 		exit(1);
 	}
 	outputParams.channelCount = sfInfo.channels;
-	outputParams.sampleFormat = get_sample_format(sfInfo.format & SF_FORMAT_SUBMASK);
+	paFormat = get_sample_format(sfInfo.format & SF_FORMAT_SUBMASK);
+	outputParams.sampleFormat = paFloat32;
 	outputParams.device = Pa_GetDefaultOutputDevice();
 	outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowOutputLatency;
 	outputParams.hostApiSpecificStreamInfo = NULL;
@@ -46,6 +47,11 @@ void Audio::play(unsigned short pos) // default pos = 0
 void Audio::stop()
 {
 
+}
+
+void Audio::pause()
+{
+	
 }
 
 double Audio::getTime()
