@@ -22,7 +22,7 @@ void Wave::play(unsigned short pos) // default pos = 0
 		paused = false;
 		pos = currentTime;
 	}
-	thread = boost::thread(boost::bind(&Wave::playPCM, this, pos));
+	thread = boost::thread(boost::bind(&Wave::playThread, this, pos));
 }
 
 void Wave::printSpecs()
@@ -106,7 +106,7 @@ double Wave::getTime()
 	Audio::getTime();
 }
 
-void Wave::playPCM(unsigned short pos)
+void Wave::playThread(unsigned short pos)
 {
 	try
 	{

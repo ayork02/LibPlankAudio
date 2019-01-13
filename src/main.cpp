@@ -21,7 +21,6 @@ Audio::Audio(const char* file)
 		exit(1);
 	}
 	outputParams.channelCount = sfInfo.channels;
-	paFormat = get_sample_format(sfInfo.format & SF_FORMAT_SUBMASK);
 	outputParams.sampleFormat = paFloat32;
 	outputParams.device = Pa_GetDefaultOutputDevice();
 	outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowOutputLatency;
@@ -70,26 +69,4 @@ void Audio::printDuration()
 	sprintf(hms, "%d:%d:%d.%d", hour, min, sec, millisec);
 	printf("Approximate Duration: %s", hms);
 	delete[] hms;
-}
-
-inline PaSampleFormat get_sample_format(int sf_format)
-{
-	switch(sf_format)
-	{
-		case SF_FORMAT_PCM_S8 : 
-			return paInt8;
-		case SF_FORMAT_PCM_16 : 
-			return paInt16;
-		case SF_FORMAT_PCM_24 : 
-			return paInt24;
-		case SF_FORMAT_PCM_32 : 
-			return paInt32;
-		case SF_FORMAT_PCM_U8 : 
-			return paUInt8;
-		case SF_FORMAT_FLOAT : 
-			return paFloat32;
-		default :
-			std::cerr << "Format Not Supported" << std::endl;
-			exit(1);
-	}
 }

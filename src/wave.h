@@ -18,5 +18,5 @@ private:
 	float* data;
 	boost::thread thread;
 
-	void playPCM(unsigned short pos);
+	void playThread(unsigned short pos);
 };

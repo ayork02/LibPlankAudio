@@ -24,7 +24,6 @@ protected:
 	SF_INFO sfInfo;
 	PaStream *stream;
 	double currentTime;
-	PaSampleFormat paFormat;
 	bool paused = false;
 
 	Audio(const char* file); // opens audio device

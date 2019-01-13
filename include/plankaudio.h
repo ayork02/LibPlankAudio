@@ -18,13 +18,16 @@ protected:
 	PaError paError;
 	SNDFILE *sndFile;
 	SF_INFO sfInfo;
+	PaStream *stream;
 	double currentTime;
+	bool paused = false;
 
 	Audio(const char* file); // opens audio device
 	~Audio();
 	virtual void play(unsigned short pos = 0);
 	virtual void printSpecs();
 	virtual void stop();
+	virtual void pause();
 public:
 	void printDuration();
 	double getTime();
@@ -39,13 +42,14 @@ public:
 	void printDuration();
 	void play(unsigned short pos = 0);
 	void stop();
+	void pause();
 	double getTime();
 private:
 	const char* filepath;
-	short* data;
+	float* data;
 	boost::thread thread;
 
-	void playPCM16(unsigned short pos);	
+	void playThread(unsigned short pos);
 };
 
 inline PaSampleFormat get_sample_format(int sf_format);
