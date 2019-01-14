@@ -24,6 +24,7 @@ file(GLOB source_files "${source_dir}/*.cpp")
 find_package(Threads REQUIRED)
 find_package(ALSA REQUIRED)
 find_package(PortAudio REQUIRED)
+find_package(SndFile 1.0.28 REQUIRED)
 find_package(Boost 1.58 REQUIRED COMPONENTS thread)
 
 add_library(plankaudio SHARED ${source_files})
@@ -34,21 +35,19 @@ set_target_properties(plankaudio PROPERTIES
 
 target_include_directories(plankaudio
 	PRIVATE
-		${CMAKE_CURRENT_SOURCE_DIR}/dependencies/sndfile/include
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 		${ALSA_INCLUDE_DIRS}
 		${PORTAUDIO_INCLUDE_DIRS}
 		${Boost_INCLUDE_DIRS}
-		${LIBSNDFILE_INCLUDE_DIRS}
+		${SNDFILE_INCLUDE_DIRS}
 )
 
 target_link_libraries(plankaudio
 	PRIVATE
-		${CMAKE_CURRENT_SOURCE_DIR}/dependencies/sndfile/lib/libsndfile.so.1.0.28
 		${CMAKE_THREAD_LIBS_INIT}
 		${ALSA_LIBRARIES}
 		${PORTAUDIO_LIBRARIES}
-		${LIBSNDFILE_LIBS}
+		${SNDFILE_LIBS}
 		Boost::boost
 		Boost::thread
 )
