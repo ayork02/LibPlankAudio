@@ -1,22 +1,28 @@
-#pragma once
+#ifndef WAVE_H
+#define WAVE_H
 
 #include "main.h"
 
-class Wave : protected Audio
+namespace PlanktonAudio
 {
-public:
-	Wave(const char* file);
-	~Wave();
-	void printSpecs();
-	void printDuration();
-	void play(unsigned short pos = 0);
-	void stop();
-	void pause();
-	double getTime();
-private:
-	const char* filepath;
-	float* data;
-	boost::thread thread;
+	class Wave : protected Audio
+	{
+	public:
+		Wave(const char* t_file);
+		~Wave();
+		void printSpecs();
+		void printDuration();
+		void play(unsigned short t_pos = 0);
+		void stop();
+		void pause();
+		double getTime();
+	private:
+		const char* m_filepath;
+		float* m_data;
+		boost::thread m_thread;
 
-	void playThread(unsigned short pos);
-};
+		void playThread(unsigned short t_pos);
+	};
+}
+
+#endif

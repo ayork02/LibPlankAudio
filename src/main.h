@@ -1,8 +1,5 @@
-#pragma once
-
-#pragma warning(disable : 4244)
-
-#define _CRT_SECURE_NO_WARNINGS
+#ifndef MAIN_H
+#define MAIN_H
 
 #include <iostream>
 #include <string>
@@ -14,27 +11,32 @@
 #include <csignal>
 #include <boost/thread.hpp>
 
-class Audio
+namespace PlanktonAudio
 {
-protected:
-	double duration; // duration in seconds
-	PaStreamParameters outputParams;
-	PaError paError;
-	SNDFILE *sndFile;
-	SF_INFO sfInfo;
-	PaStream *stream;
-	double currentTime;
-	bool paused = false;
+	class Audio
+	{
+	protected:
+		double const m_duration; // duration in seconds
+		PaStreamParameters m_outputParams;
+		PaError m_paError;
+		SNDFILE *m_sndFile;
+		SF_INFO m_sfInfo;
+		PaStream *m_stream;
+		double m_currentTime;
+		bool m_paused = false;
 
-	Audio(const char* file); // opens audio device
-	~Audio();
-	virtual void play(unsigned short pos = 0);
-	virtual void printSpecs();
-	virtual void stop();
-	virtual void pause();
-public:
-	void printDuration();
-	double getTime();
-};
+		Audio(const char* t_file); // opens audio device
+		~Audio();
+		virtual void play(unsigned short t_pos = 0);
+		virtual void printSpecs();
+		virtual void stop();
+		virtual void pause();
+	public:
+		void printDuration();
+		double getTime();
+	};
+}
 
-inline PaSampleFormat get_sample_format(int sf_format);
+inline PaSampleFormat get_sample_format(int t_sfFormat);
+
+#endif

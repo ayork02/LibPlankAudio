@@ -1,68 +1,68 @@
 #include "main.h"
 
-Audio::Audio(const char* file)
+PlanktonAudio::Audio::Audio(const char* t_file)
 {
-	sndFile = sf_open(file, SFM_READ, &sfInfo);
-	if (!sndFile) // TODO: Add file validation
+	m_sndFile = sf_open(t_file, SFM_READ, &m_sfInfo);
+	if (!m_sndFile) // TODO: Add file validation
 	{
 		std::cerr << "Error Opening File" << std::endl;
 		exit(1);
 	}
-    paError = Pa_Initialize();
-	if(paError != paNoError) // TODO: Make inline function
+    m_paError = Pa_Initialize();
+	if(m_paError != paNoError) // TODO: Make inline function
 	{
-		std::cerr << "Error Initialising PortAudio: " << Pa_GetErrorText(paError) << std::endl;
+		std::cerr << "Error Initialising PortAudio: " << Pa_GetErrorText(m_paError) << std::endl;
         Pa_Terminate();
 		exit(1);
 	}
-	if(sfInfo.channels == !(1 || 2))
+	if(m_sfInfo.channels == !(1 || 2))
 	{
 		std::cerr << "Channel Number Not Supported" << std::endl;
 		exit(1);
 	}
-	outputParams.channelCount = sfInfo.channels;
-	outputParams.sampleFormat = paFloat32;
-	outputParams.device = Pa_GetDefaultOutputDevice();
-	outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowOutputLatency;
-	outputParams.hostApiSpecificStreamInfo = NULL;
-	duration = sfInfo.frames / double(sfInfo.samplerate);
+	m_outputParams.channelCount = m_sfInfo.channels;
+	m_outputParams.sampleFormat = paFloat32;
+	m_outputParams.device = Pa_GetDefaultOutputDevice();
+	m_outputParams.suggestedLatency = Pa_GetDeviceInfo(m_outputParams.device)->defaultLowOutputLatency;
+	m_outputParams.hostApiSpecificStreamInfo = nullptr;
+	m_duration = m_sfInfo.frames / double(m_sfInfo.samplerate);
 }
 
-Audio::~Audio()
+PlanktonAudio::Audio::~Audio()
 {
-    sf_close(sndFile);
+    sf_close(m_sndFile);
 }
 
-void Audio::printSpecs()
-{
-
-}
-
-void Audio::play(unsigned short pos) // default pos = 0
+void PlanktonAudio::Audio::printSpecs()
 {
 
 }
 
-void Audio::stop()
+void PlanktonAudio::Audio::play(unsigned short t_pos) // default pos = 0
 {
 
 }
 
-void Audio::pause()
+void PlanktonAudio::Audio::stop()
+{
+
+}
+
+void PlanktonAudio::Audio::pause()
 {
 	
 }
 
-double Audio::getTime()
+double PlanktonAudio::Audio::getTime()
 {
-	return currentTime;
+	return m_currentTime;
 }
 
-void Audio::printDuration()
+void PlanktonAudio::Audio::printDuration()
 {
 	static char* hms = new char[100];
-	int hour = duration / 3600;
-	double seconds = (int)duration % 3600;
+	int hour = m_duration / 3600;
+	double seconds = (int)m_duration % 3600;
 	int min = seconds / 60;
 	int sec = (int)seconds % 60;
 	int millisec = (seconds - sec) * 100;

@@ -1,34 +1,34 @@
 #include "wave.h"
 
-Wave::Wave(const char* file)
-	: Audio(file)
+PlanktonAudio::Wave::Wave(const char* t_file)
+	: Audio(t_file)
 {
-	filepath = file;
-	if((sfInfo.format & SF_FORMAT_TYPEMASK) != SF_FORMAT_WAV)
+	m_filepath = t_file;
+	if((m_sfInfo.format & SF_FORMAT_TYPEMASK) != SF_FORMAT_WAV)
 	{
 		std::cerr << "Invalid WAVE File" << std::endl;
 	}
 }
 
-Wave::~Wave()
+PlanktonAudio::Wave::~Wave()
 {
-	thread.join();
+	m_thread.join();
 }
 
-void Wave::play(unsigned short pos) // default pos = 0
+void PlanktonAudio::Wave::play(unsigned short t_pos) // default pos = 0
 {
-	if(paused == true)
+	if(m_paused == true)
 	{
-		paused = false;
-		pos = currentTime;
+		m_paused = false;
+		t_pos = m_currentTime;
 	}
-	thread = boost::thread(boost::bind(&Wave::playThread, this, pos));
+	m_thread = boost::thread(boost::bind(&PlanktonAudio::Wave::playThread, this, t_pos));
 }
 
-void Wave::printSpecs()
+void PlanktonAudio::Wave::printSpecs()
 {
 	FILE *file;
-	file = fopen(filepath, "rb");
+	file = fopen(m_filepath, "rb");
 	int read = 0;
 	char riff[4];
 	read = fread(riff, 4, 1, file);
@@ -96,74 +96,74 @@ void Wave::printSpecs()
 	fclose(file);
 }
 
-void Wave::printDuration()
+void PlanktonAudio::Wave::printDuration()
 {
-	Audio::printDuration();
+	PlanktonAudio::Audio::printDuration();
 }
 
-double Wave::getTime()
+double PlanktonAudio::Wave::getTime()
 {
-	Audio::getTime();
+	PlanktonAudio::Audio::getTime();
 }
 
-void Wave::playThread(unsigned short pos)
+void PlanktonAudio::Wave::playThread(unsigned short pos)
 {
 	try
 	{
 		sf_count_t readCount;
 		sf_count_t position;
-		data = (float*)malloc(sfInfo.frames * sfInfo.channels * sizeof(float));
-		paError = Pa_OpenStream(
-        	&stream, NULL, &outputParams,
-        	sfInfo.samplerate, 1024, paClipOff,
-        	NULL, NULL);
-    	if(paError != paNoError)
+		m_data = (float*)malloc(m_sfInfo.frames * m_sfInfo.channels * sizeof(float));
+		m_paError = Pa_OpenStream(
+        	&m_stream, nullptr, &m_outputParams,
+        	m_sfInfo.samplerate, 1024, paClipOff,
+        	nullptr, nullptr);
+    	if(m_paError != paNoError)
 		{
-			std::cerr << "Error Opening Stream: " << Pa_GetErrorText(paError) << std::endl;
+			std::cerr << "Error Opening Stream: " << Pa_GetErrorText(m_paError) << std::endl;
         	Pa_Terminate();
-			delete[] data;
+			delete[] m_data;
 			exit(1);
 		}
-    	paError = Pa_StartStream(stream);
-    	if(paError != paNoError)
+    	m_paError = Pa_StartStream(m_stream);
+    	if(m_paError != paNoError)
 		{
-			std::cerr << "Error Starting Stream: " << Pa_GetErrorText(paError) << std::endl;
+			std::cerr << "Error Starting Stream: " << Pa_GetErrorText(m_paError) << std::endl;
         	Pa_Terminate();
-			delete[] data;
+			delete[] m_data;
 			exit(1);
 		}
 		sf_count_t startFrame;
-		startFrame = pos * sfInfo.samplerate;
-		sf_seek(sndFile, startFrame, SEEK_SET);
-		while((readCount = sf_readf_float(sndFile, data, 1024)))
+		startFrame = pos * m_sfInfo.samplerate;
+		sf_seek(m_sndFile, startFrame, SEEK_SET);
+		while((readCount = sf_readf_float(m_sndFile, m_data, 1024)))
     	{
 			boost::this_thread::interruption_point();
-        	paError = Pa_WriteStream(stream, data, 1024);
-			position = sf_seek(sndFile, 0, SEEK_CUR);
-			currentTime = (position / double(sfInfo.frames)) * duration;
-        	if (paError != paNoError)
+        	m_paError = Pa_WriteStream(m_stream, m_data, 1024);
+			position = sf_seek(m_sndFile, 0, SEEK_CUR);
+			m_currentTime = (position / double(m_sfInfo.frames)) * m_duration;
+        	if (m_paError != paNoError)
         	{
-            	std::cerr << "Error Writing to Stream: " << Pa_GetErrorText(paError) << std::endl;
-        		Pa_AbortStream(stream);
+            	std::cerr << "Error Writing to Stream: " << Pa_GetErrorText(m_paError) << std::endl;
+        		Pa_AbortStream(m_stream);
 				Pa_Terminate();
-				delete[] data;
+				delete[] m_data;
 				exit(1);
 			}
 		}
-		paError = Pa_CloseStream(stream);
-		if(paError != paNoError)
+		m_paError = Pa_CloseStream(m_stream);
+		if(m_paError != paNoError)
 		{
-			std::cerr << "Error Closing Stream: " << Pa_GetErrorText(paError) << std::endl;
+			std::cerr << "Error Closing Stream: " << Pa_GetErrorText(m_paError) << std::endl;
         	Pa_Terminate();
-			delete[] data;
+			delete[] m_data;
 			exit(1);
 		}
-		delete[] data;
+		delete[] m_data;
 	}
 	catch(boost::thread_interrupted Interruption)
 	{
 		std::cout << "Playback Stopped" << std::endl;
-		Pa_CloseStream(stream);
+		Pa_CloseStream(m_stream);
 		return;
 	}
 	catch(std::exception& e)
@@ -173,15 +173,15 @@ void Wave::playThread(unsigned short pos)
 	}
 }
 
-void Wave::pause()
+void PlanktonAudio::Wave::pause()
 {
-	paused = true;
-	thread.interrupt();
-	thread.join();
+	m_paused = true;
+	m_thread.interrupt();
+	m_thread.join();
 }
 
-void Wave::stop()
+void PlanktonAudio::Wave::stop()
 {
-	thread.interrupt();
-	thread.join();
+	m_thread.interrupt();
+	m_thread.join();
 }
