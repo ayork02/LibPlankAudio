@@ -16,7 +16,7 @@ namespace PlanktonAudio
 	class Audio
 	{
 	protected:
-		double const m_duration; // duration in seconds
+		double m_duration; // duration in seconds
 		PaStreamParameters m_outputParams;
 		PaError m_paError;
 		SNDFILE *m_sndFile;
